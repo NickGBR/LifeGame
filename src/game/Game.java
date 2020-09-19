@@ -1,9 +1,10 @@
 package game;
 
-public class Game implements Runnable{
+public class Game{
     private Display display;
     private int cellsCounter;
     private int iteration;
+    private volatile int step=0;
     private int yLength;
     private int xLength;
 
@@ -14,17 +15,21 @@ public class Game implements Runnable{
         this.iteration = iteration;
         this.display = display;
         this.status = display.getResult();
-        this.xLength = display.getxLength();
-        this.yLength = display.getyLength();
+        this.xLength = display.getXLength();
+        this.yLength = display.getYLength();
         this.cellCounter = new String[xLength][yLength];
     }
 
-    public void play(){
+    public void play() throws InterruptedException {
+        int i = 0;
         for(int iteration = 0; iteration<this.iteration; iteration++){
+            Thread.sleep(50);
+            System. out. print("\033[H\033[2J");
+            //System. out. flush();
+            display.show(status);
             for(int x = 0; x<xLength;x++){
-                display.show();
-                //Thread.sleep(100);
                 for(int y = 0; y<yLength;y++) {
+                    cellsCounter = 0;
                     String point = status[x][y];
                     String cell = " O ";
                     if (cell.equals(status[x][getRightY(y+1)])) cellsCounter++;
@@ -40,48 +45,81 @@ public class Game implements Runnable{
 
                     switch (cellsCounter){
                         case 0:
-                        //case 2:
                         case 1:
                         case 4:
                         case 5:
                         case 6:
                         case 7:
                         case 8:
-                            cellsCounter = 0;
-                            display.killCell(x, y);
+                            if(point.equals(cell)){
+                            display.killCell(x, y);}
+                            break;
+                        case 2: if(point.equals(" O ")){
+                            display.addCell(x, y);
+                        }
                             break;
                         case 3:
                             display.addCell(x, y);
-                            cellsCounter = 0;
-                        default:cellsCounter = 0;
+                            break;
                     }
+                    i++;
                 }
             }
+            display.arrayLoad();
+
         }
-        Display.show(cellCounter);
+        Display.showCounts(cellCounter);
+    }
+
+    public void playMultithread() throws InterruptedException {
+        Thread killer = new Thread(new Killer(this));
+        Thread giver = new Thread(new LivesGiver(this));
+        giver.start();
+        killer.start();
+        killer.join();
+        giver.join();
     }
 
 
-    private int getRightX(int x) {
+    public int getRightX(int x) {
         int correctedX = x;
         if (x < 0) correctedX = xLength - 1;
         else if (x > xLength-1) correctedX = 0;
         return correctedX;
     }
 
-    private int getRightY(int y) {
+    public int getRightY(int y) {
         int correctedY = y;
         if (y < 0) correctedY = yLength - 1;
         else if (y > yLength-1) correctedY = 0;
         return correctedY;
     }
 
+    public int getIteration() {
+        return iteration;
+    }
+
     public String[][] getStatus() {
         return status;
     }
 
-    @Override
-    public void run() {
-        play();
+    public int getyLength() {
+        return yLength;
+    }
+
+    public int getxLength() {
+        return xLength;
+    }
+
+    public Display getDisplay() {
+        return display;
+    }
+
+    public int getStep() {
+        return step;
+    }
+
+    public void addStep() {
+        this.step++;
     }
 }

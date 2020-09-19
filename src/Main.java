@@ -1,23 +1,21 @@
-import game.Display;
-import game.Field;
-import game.Game;
+import game.*;
+
+import java.util.Arrays;
 
 public class Main {
 
     public static void main(String[] args) throws InterruptedException {
 
-        Field field = new Field(20,20);
+        Field field = new Field(50,50);
         Display display = new Display(field);
+        Game game = new Game(display,2000);
 
-        for(int i = 0; i<300; i++){
-            display.addCell((int) (Math.random()*20), (int) (Math.random()*20));
+
+        for(int i = 0; i<1000; i++){
+            display.addCell((int) (Math.random()*50), (int) (Math.random()*50));
         }
 
-        Game game = new Game(display,100);
+        game.play();
 
-        Thread thread1 = new Thread(game);
-        Thread thread2 = new Thread(game);
-
-        thread1.start();
     }
 }
