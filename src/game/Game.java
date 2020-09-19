@@ -1,5 +1,8 @@
 package game;
 
+import game.handler.LeftSideHandler;
+import game.handler.RightSideHandler;
+
 public class Game{
     private Display display;
     private int cellsCounter;
@@ -21,11 +24,9 @@ public class Game{
     }
 
     public void play() throws InterruptedException {
-        int i = 0;
         for(int iteration = 0; iteration<this.iteration; iteration++){
-            Thread.sleep(50);
+            Thread.sleep(1000);
             System. out. print("\033[H\033[2J");
-            //System. out. flush();
             display.show(status);
             for(int x = 0; x<xLength;x++){
                 for(int y = 0; y<yLength;y++) {
@@ -62,7 +63,6 @@ public class Game{
                             display.addCell(x, y);
                             break;
                     }
-                    i++;
                 }
             }
             display.arrayLoad();
@@ -71,13 +71,13 @@ public class Game{
         Display.showCounts(cellCounter);
     }
 
-    public void playMultithread() throws InterruptedException {
-        Thread killer = new Thread(new Killer(this));
-        Thread giver = new Thread(new LivesGiver(this));
-        giver.start();
-        killer.start();
-        killer.join();
-        giver.join();
+    public void playMultithreading() throws InterruptedException {
+        Thread leftSideHandler = new Thread(new LeftSideHandler(this));
+        Thread rightSideHandler = new Thread(new RightSideHandler(this));
+        rightSideHandler.setName("right");
+        leftSideHandler.setName("left");
+        rightSideHandler.start();
+        leftSideHandler.start();
     }
 
 
