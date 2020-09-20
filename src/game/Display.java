@@ -57,22 +57,34 @@ public class Display {
         }
     }
 
+
+    //Changed
     private void fillDisplay(String[][] fillingArray) {
+        int i = 0;
         for (int x = 0; x < xLength; x++) {
 
             for (int y = 0; y < yLength; y++) {
                 {
-                    fillingArray[x][y] = " . ";
+                    fillingArray[x][y] =  " . ";
+                }
+            }
+        }
+    }
+
+    void fillWithFile(String[][] fillingArray) {
+        for (int y = 0; y < xLength; y++) {
+
+            for (int x = 0; x < yLength; x++) {
+                {
+                    fillingArray[x][y] =  " . ";
                 }
             }
         }
     }
 
     public synchronized void show(String[][] res) {
-
         for (int y = 0; y < yLength; y++) {
-            System.out.println();
-            for (int x = 0; x < yLength; x++) {
+            for (int x = 0; x < xLength; x++) {
                 resultField = resultField + res[x][y];
             }
             resultField = resultField + "\n";
@@ -88,7 +100,6 @@ public class Display {
                 System.out.print(strings[x][y] + " ");
             }
         }
-
     }
 
 
