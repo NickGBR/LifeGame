@@ -71,17 +71,6 @@ public class Display {
         }
     }
 
-    void fillWithFile(String[][] fillingArray) {
-        for (int y = 0; y < xLength; y++) {
-
-            for (int x = 0; x < yLength; x++) {
-                {
-                    fillingArray[x][y] =  " . ";
-                }
-            }
-        }
-    }
-
     public synchronized void show(String[][] res) {
         for (int y = 0; y < yLength; y++) {
             for (int x = 0; x < xLength; x++) {
@@ -93,10 +82,22 @@ public class Display {
         resultField = "";
     }
 
-    public static void showCounts(String[][] strings) {
-        for (int y = 0; y < strings.length; y++) {
+    public String getResultString(String[][] res){
+        String resultField = "";
+        for (int y = 0; y < yLength; y++) {
+            for (int x = 0; x < xLength; x++) {
+                resultField = resultField + res[x][y];
+            }
+            resultField = resultField + "\n";
+        }
+        return resultField;
+    }
+
+
+    public void showCounts(String[][] strings) {
+        for (int y = 0; y < this.yLength; y++) {
             System.out.println();
-            for (int x = 0; x < strings.length; x++) {
+            for (int x = 0; x < this.xLength; x++) {
                 System.out.print(strings[x][y] + " ");
             }
         }
@@ -107,10 +108,6 @@ public class Display {
         return result;
     }
 
-    public String[][] getFutureResult() {
-        return futureResult;
-    }
-
     int getYLength() {
         return yLength;
     }
@@ -119,7 +116,7 @@ public class Display {
         return xLength;
     }
 
-    public void arrayMultithreadingLoad() {
+    public synchronized void arrayMultithreadingLoad() {
         if (Thread.currentThread().getName().equals("right")) {
 
             for (int x = xLength/2-1; x < xLength; x++) {
@@ -139,7 +136,6 @@ public class Display {
             }
         }
         fillDisplay(futureResult);
-
     }
 
     void arrayLoad() {
@@ -150,6 +146,12 @@ public class Display {
             }
         fillDisplay(futureResult);
 
+    }
+
+    void generateCells(int worldOccupancyRate){
+        for(int i = 0; i < worldOccupancyRate*(this.xLength+this.yLength); i++){
+            this.addCell((int) (Math.random() * this.xLength), (int) (Math.random() * this.yLength), this.getResult());
+        }
     }
 
 }

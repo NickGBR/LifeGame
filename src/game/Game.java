@@ -25,7 +25,7 @@ public class Game{
 
     public void play() throws InterruptedException {
         for(int iteration = 0; iteration<this.iteration; iteration++){
-            Thread.sleep(1000);
+            Thread.sleep(250);
             System. out. print("\033[H\033[2J");
             display.show(status);
             for(int x = 0; x<xLength;x++){
@@ -68,7 +68,7 @@ public class Game{
             display.arrayLoad();
 
         }
-        Display.showCounts(cellCounter);
+        display.showCounts(cellCounter);
     }
 
     public void playMultithreading() throws InterruptedException {

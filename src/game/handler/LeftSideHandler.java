@@ -6,7 +6,7 @@ import game.Game;
 public class LeftSideHandler implements Runnable{
 
         private Game game;
-        private String[][] field;
+        private volatile String[][] field;
         private int xLength;
         private int yLength;
         private final String[][] cellCounter;
@@ -27,7 +27,7 @@ public class LeftSideHandler implements Runnable{
             while (step<game.getIteration()*2){
 
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(250);
                 } catch (InterruptedException e) {
 
                 }
@@ -76,7 +76,6 @@ public class LeftSideHandler implements Runnable{
                 display.arrayMultithreadingLoad();
                 game.addStep();
                 step = game.getStep();
-                //System.out.println("RightHandler = " + game.getStep());
             }
         }
     }

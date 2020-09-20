@@ -27,7 +27,7 @@ public class RightSideHandler implements Runnable {
         while (step<game.getIteration()*2){
 
             try {
-                Thread.sleep(1000);
+                Thread.sleep(250);
             } catch (InterruptedException e) {
 
             }
@@ -76,7 +76,6 @@ public class RightSideHandler implements Runnable {
             display.arrayMultithreadingLoad();
             game.addStep();
             step = game.getStep();
-            //System.out.println("RightHandler = " + game.getStep());
         }
     }
 }
