@@ -3,6 +3,9 @@ package game.handler;
 import game.Display;
 import game.Game;
 
+import java.sql.SQLOutput;
+import java.util.concurrent.BrokenBarrierException;
+
 public class RightSideHandler implements Runnable {
 
     private Game game;
@@ -15,30 +18,24 @@ public class RightSideHandler implements Runnable {
 
     public RightSideHandler(Game game) {
         this.game = game;
-        field = game.getStatus();
         xLength = game.getxLength();
         yLength = game.getyLength();
         cellCounter = new String[xLength][yLength];
         this.display = game.getDisplay();
+        this.field = display.getResult();
     }
 
     @Override
     public void run() {
-        while (step<game.getIteration()*2){
+        while (step<game.getIteration()){
 
-            try {
-                Thread.sleep(250);
-            } catch (InterruptedException e) {
+            waitLeftThread();
 
-            }
-            System. out. print("\033[H\033[2J");
-            display.show(field);
-
-            for(int x = xLength/2-1; x < xLength; x++){
+            for(int x = xLength/2; x < xLength; x++){
                 for(int y = 0; y < yLength; y++) {
 
                     int cellsCounter = 0;
-                    String cell = " O ";
+                    String cell = display.getCellBody();
                     String point = field[x][y];
 
                     if (cell.equals(field[x][game.getRightY(y + 1)])) cellsCounter++;
@@ -60,11 +57,13 @@ public class RightSideHandler implements Runnable {
                         case 6:
                         case 7:
                         case 8:
-                            if(point.equals(cell)){
-                                display.killCell(x, y);}
+                            if(point.equals(cell)) {
+                                display.killCell(x, y);
+                            }
                             break;
-                        case 2: if(point.equals(" O ")){
+                        case 2: if(point.equals(cell)){
                             display.addCell(x, y);
+                            break;
                         }
                             break;
                         case 3:
@@ -73,9 +72,20 @@ public class RightSideHandler implements Runnable {
                     }
                 }
             }
-            display.arrayMultithreadingLoad();
-            game.addStep();
+
+            waitLeftThread();
+
             step = game.getStep();
+        }
+    }
+
+    private void waitLeftThread() {
+        try {
+            game.getBarrier().await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (BrokenBarrierException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -3,6 +3,8 @@ package game;
 import game.handler.LeftSideHandler;
 import game.handler.RightSideHandler;
 
+import java.util.concurrent.CyclicBarrier;
+
 public class Game{
     private Display display;
     private int cellsCounter;
@@ -10,11 +12,14 @@ public class Game{
     private volatile int step=0;
     private int yLength;
     private int xLength;
+    private boolean animated = false;
 
     private String status[][];
     private String cellCounter[][];
+    private CyclicBarrier barrier;
 
     public Game(Display display, int iteration) {
+        this.barrier = new CyclicBarrier(2);
         this.iteration = iteration;
         this.display = display;
         this.status = display.getResult();
@@ -23,16 +28,29 @@ public class Game{
         this.cellCounter = new String[xLength][yLength];
     }
 
+    public Game(Display display, int iteration, boolean animated) {
+        this.barrier = new CyclicBarrier(2);
+        this.iteration = iteration;
+        this.display = display;
+        this.status = display.getResult();
+        this.xLength = display.getXLength();
+        this.yLength = display.getYLength();
+        this.cellCounter = new String[xLength][yLength];
+        this.animated = animated;
+    }
+
     public void play() throws InterruptedException {
         for(int iteration = 0; iteration<this.iteration; iteration++){
-            Thread.sleep(250);
-            System. out. print("\033[H\033[2J");
-            display.show(status);
+            if(this.isAnimated()) {
+                Thread.sleep(120);
+                display.show(status);
+            }
             for(int x = 0; x<xLength;x++){
                 for(int y = 0; y<yLength;y++) {
                     cellsCounter = 0;
                     String point = status[x][y];
-                    String cell = " O ";
+                    String cell = display.getCellBody();
+
                     if (cell.equals(status[x][getRightY(y+1)])) cellsCounter++;
                     if (cell.equals(status[x][getRightY(y-1)])) cellsCounter++;
                     if (cell.equals(status[getRightX(x+1)][y])) cellsCounter++;
@@ -55,7 +73,7 @@ public class Game{
                             if(point.equals(cell)){
                             display.killCell(x, y);}
                             break;
-                        case 2: if(point.equals(" O ")){
+                        case 2: if(point.equals(cell)){
                             display.addCell(x, y);
                         }
                             break;
@@ -68,10 +86,9 @@ public class Game{
             display.arrayLoad();
 
         }
-        display.showCounts(cellCounter);
     }
 
-    public void playMultithreading() throws InterruptedException {
+    public void playMultithreading(){
         Thread leftSideHandler = new Thread(new LeftSideHandler(this));
         Thread rightSideHandler = new Thread(new RightSideHandler(this));
         rightSideHandler.setName("right");
@@ -121,5 +138,13 @@ public class Game{
 
     public void addStep() {
         this.step++;
+    }
+
+    public boolean isAnimated() {
+        return animated;
+    }
+
+    public CyclicBarrier getBarrier() {
+        return barrier;
     }
 }

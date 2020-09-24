@@ -1,5 +1,9 @@
 package game;
 
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+
 public class Display {
     int i = 0;
     private String resultField = "";
@@ -8,8 +12,10 @@ public class Display {
     private volatile String[][] futureResult;
     private int yLength;
     private int xLength;
+    private String cellBody = " * ";
+    private String deadCellBody = " . ";
 
-    public Display(Field field) {
+    public Display(Field field){
         this.field = field;
         this.yLength = field.getY().length;
         this.xLength = field.getX().length;
@@ -26,7 +32,7 @@ public class Display {
             for (int y = 0; y < yLength; y++) {
 
                 if (x == coordX && y == coordY) {
-                    where[x][y] = " O ";
+                    where[x][y] = cellBody;
                 }
             }
         }
@@ -38,7 +44,7 @@ public class Display {
             for (int y = 0; y < yLength; y++) {
 
                 if (x == coordX && y == coordY) {
-                    futureResult[x][y] = " O ";
+                    futureResult[x][y] = cellBody;
                 }
             }
         }
@@ -51,7 +57,7 @@ public class Display {
             for (int y = 0; y < yLength; y++) {
 
                 if (x == coordX && y == coordY) {
-                    futureResult[x][y] = " . ";
+                    futureResult[x][y] = deadCellBody;
                 }
             }
         }
@@ -65,7 +71,7 @@ public class Display {
 
             for (int y = 0; y < yLength; y++) {
                 {
-                    fillingArray[x][y] =  " . ";
+                    fillingArray[x][y] = deadCellBody;
                 }
             }
         }
@@ -78,6 +84,7 @@ public class Display {
             }
             resultField = resultField + "\n";
         }
+        System. out. print("\033[H\033[2J");
         System.out.print(resultField);
         resultField = "";
     }
@@ -116,29 +123,7 @@ public class Display {
         return xLength;
     }
 
-    public synchronized void arrayMultithreadingLoad() {
-        if (Thread.currentThread().getName().equals("right")) {
-
-            for (int x = xLength/2-1; x < xLength; x++) {
-                for (int y = 0; y < yLength; y++) {
-                    result[x][y] = futureResult[x][y];
-                }
-            }
-
-        }
-
-        if (Thread.currentThread().getName().equals("left")) {
-
-            for (int x = 0; x < xLength/2+1; x++) {
-                for (int y = 0; y < yLength; y++) {
-                    result[x][y] = futureResult[x][y];
-                }
-            }
-        }
-        fillDisplay(futureResult);
-    }
-
-    void arrayLoad() {
+    public void arrayLoad() {
             for (int x = 0; x < xLength; x++) {
                 for (int y = 0; y < yLength; y++) {
                     result[x][y] = futureResult[x][y];
@@ -154,4 +139,19 @@ public class Display {
         }
     }
 
+    public String getCellBody() {
+        return cellBody;
+    }
+
+    public Field getField() {
+        return field;
+    }
+
+    public String getDeadCellBody() {
+        return deadCellBody;
+    }
+
+    public String[][] getFutureResult() {
+        return futureResult;
+    }
 }
