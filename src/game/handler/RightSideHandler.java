@@ -3,7 +3,6 @@ package game.handler;
 import game.Display;
 import game.Game;
 
-import java.sql.SQLOutput;
 import java.util.concurrent.BrokenBarrierException;
 
 public class RightSideHandler implements Runnable {
@@ -22,7 +21,7 @@ public class RightSideHandler implements Runnable {
         yLength = game.getyLength();
         cellCounter = new String[xLength][yLength];
         this.display = game.getDisplay();
-        this.field = display.getResult();
+        this.field = display.getResultField();
     }
 
     @Override

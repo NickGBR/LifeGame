@@ -5,7 +5,6 @@ import game.exceptions.IncorrectFieldException;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class ConsoleInterface {
@@ -195,10 +194,11 @@ public class ConsoleInterface {
                 fieldStatusReader = new BufferedReader(new InputStreamReader(new FileInputStream(testFile)));
 
                 //Creating necessary class objects
+                display.setDeadCellBody(" . ");
                 this.display = getDisplayFromFile(fieldStatusReader); //Keeps information about alive and dead cells.
                 this.field = display.getField(); //Keeps field information.
                 this.game = new Game(display, iteration); // Keeps rules.
-
+                fieldStatusReader.close();
 
             }
         } else {
@@ -226,7 +226,7 @@ public class ConsoleInterface {
         }
 
         System.out.println("\n" + "This is your field:" + "\n");
-        display.show(display.getResult());
+        display.show(display.getResultField());
         System.out.println();
     }
 
@@ -284,14 +284,14 @@ public class ConsoleInterface {
         }
 
         Field field = new Field(fieldSlices.get(0).length, fieldSlices.size()); //Keeps field information.
-        Display display= new Display(field); // Shows field in console output.
+        Display display = new Display(field); // Shows field in console output.
 
         // Filling cells array, this block fills array of game field.
         int y = 0;
         for (String[] slice : fieldSlices) {
             for (int i = 0; i < slice.length; i++) {
                 if (slice[i].equals("1")) {
-                    display.addCell(i, y, display.getResult());
+                    display.addCell(i, y, display.getResultField());
                 }
             }
             y++;
@@ -325,13 +325,32 @@ public class ConsoleInterface {
 
     private void startGame() throws InterruptedException, IOException {
         if (settingFilePath.toLowerCase().equals("test")) {
+
+            game.setAnimated(false);
             int timeBefore = (int) System.currentTimeMillis();
             game.play();
             int timeAfter = (int) System.currentTimeMillis();
-            BufferedWriter singleThreadFinal = new BufferedWriter(new FileWriter(singleResultFile));
-            singleThreadFinal.write("Spend " + (timeAfter-timeBefore) + "millis");
-            singleThreadFinal.write(display.getResultString(display.getResult()));
-            BufferedWriter multiThreadFinal = new BufferedWriter(new FileWriter(multiResultFile));
+            writeTestResult(timeBefore, timeAfter, singleResultFile);
+            System.out.println("single thread finished");
+            System.out.println("this is singe result:\n" + display.getResultString());
+
+            // display reloading
+            display.reloadDisplay();
+            System.out.println("reloaded fields:\n" +  display.getResultString()+ "\n\n" + display.getString(display.getFutureResult()));
+
+            BufferedReader fieldStatusReader = new BufferedReader(new InputStreamReader(new FileInputStream(testFile)));
+            display = getDisplayFromFile(fieldStatusReader); //Keeps information about alive and dead cells.
+            game.setDisplay(display);
+            System.out.println("this is reloaded world from test file\n" + game.getDisplay().getResultString());
+
+            timeBefore = (int) System.currentTimeMillis();
+            game.playMultithreading();
+            timeAfter = (int) System.currentTimeMillis();
+            writeTestResult(timeBefore, timeAfter, multiResultFile);
+
+            System.out.println("Multi thread finished");
+            display.setDeadCellBody("   ");
+
         } else {
             boolean check = false;
             idiotCoefficient = 0;
@@ -349,11 +368,13 @@ public class ConsoleInterface {
 
                     switch (Integer.parseInt(command)) {
                         case 1:
+                            game.setAnimated(true);
                             game.play();
                             check = true;
                             break;
                         case 2:
                             check = true;
+                            game.setAnimated(true);
                             game.playMultithreading();
                             break;
                         case 3:
@@ -375,13 +396,22 @@ public class ConsoleInterface {
                     } else System.out.println("I TOLD INTEGER !!!");
                     check = false;
                 }
+                finalStatusWriter.write(display.getString(display.getResultField()));
+                finalStatusWriter.flush();
+                finalStatusWriter.close();
+                System.out.println("\n" + "Thanks for the game.");
+                System.out.println("Result added to result file." + "\n");
             }
-            finalStatusWriter.write(display.getResultString(display.getResult()));
-            finalStatusWriter.flush();
-            finalStatusWriter.close();
-            System.out.println("\n" + "Thanks for the game.");
-            System.out.println("Result added to result file." + "\n");
+
         }
+    }
+
+    private void writeTestResult(int timeBefore, int timeAfter, File resultFile) throws IOException {
+        BufferedWriter multiThreadFile = new BufferedWriter(new FileWriter(resultFile));
+        multiThreadFile.write("Spent " + (timeAfter-timeBefore) + " millis\n\n");
+        multiThreadFile.write(display.getResultString());
+        multiThreadFile.flush();
+        multiThreadFile.close();
     }
 
     private void userMistakesExitMessage(int idiotCoefficient) throws IOException {

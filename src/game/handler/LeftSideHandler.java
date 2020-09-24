@@ -21,7 +21,8 @@ public class LeftSideHandler implements Runnable{
         yLength = game.getyLength();
         cellCounter = new String[xLength][yLength];
         this.display = game.getDisplay();
-        this.field = display.getResult();
+        System.out.println(display.getResultString() + " multithread");
+        this.field = display.getResultField();
     }
 
     @Override
@@ -32,7 +33,7 @@ public class LeftSideHandler implements Runnable{
             if(game.isAnimated()) {
                 display.show(field);
                 try {
-                    Thread.sleep(210);
+                    Thread.sleep(160);
                 } catch (InterruptedException e) {
 
                 }

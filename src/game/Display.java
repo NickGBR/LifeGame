@@ -1,19 +1,15 @@
 package game;
 
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-
 public class Display {
-    int i = 0;
+
     private String resultField = "";
     private Field field;
     private volatile String[][] result;
     private volatile String[][] futureResult;
     private int yLength;
     private int xLength;
-    private String cellBody = " * ";
-    private String deadCellBody = " . ";
+    private static String cellBody = " O ";
+    private static String deadCellBody = "   ";
 
     public Display(Field field){
         this.field = field;
@@ -21,10 +17,13 @@ public class Display {
         this.xLength = field.getX().length;
         this.result = new String[xLength][yLength];
         this.futureResult = new String[xLength][yLength];
+        reloadDisplay();
+    }
+
+    public void reloadDisplay(){
         fillDisplay(result);
         fillDisplay(futureResult);
     }
-
 
     public void addCell(int coordX, int coordY, String[][] where) {
 
@@ -89,11 +88,23 @@ public class Display {
         resultField = "";
     }
 
-    public String getResultString(String[][] res){
+    public String getString(String[][] res){
         String resultField = "";
         for (int y = 0; y < yLength; y++) {
             for (int x = 0; x < xLength; x++) {
                 resultField = resultField + res[x][y];
+            }
+            resultField = resultField + "\n";
+        }
+        return resultField;
+    }
+
+
+    public String getResultString(){
+        String resultField = "";
+        for (int y = 0; y < yLength; y++) {
+            for (int x = 0; x < xLength; x++) {
+                resultField = resultField + result[x][y];
             }
             resultField = resultField + "\n";
         }
@@ -111,31 +122,19 @@ public class Display {
     }
 
 
-    public String[][] getResult() {
-        return result;
-    }
-
-    int getYLength() {
-        return yLength;
-    }
-
-    int getXLength() {
-        return xLength;
-    }
-
     public void arrayLoad() {
-            for (int x = 0; x < xLength; x++) {
-                for (int y = 0; y < yLength; y++) {
-                    result[x][y] = futureResult[x][y];
-                }
+        for (int x = 0; x < xLength; x++) {
+            for (int y = 0; y < yLength; y++) {
+                result[x][y] = futureResult[x][y];
             }
+        }
         fillDisplay(futureResult);
 
     }
 
     void generateCells(int worldOccupancyRate){
         for(int i = 0; i < worldOccupancyRate*(this.xLength+this.yLength); i++){
-            this.addCell((int) (Math.random() * this.xLength), (int) (Math.random() * this.yLength), this.getResult());
+            this.addCell((int) (Math.random() * this.xLength), (int) (Math.random() * this.yLength), this.getResultField());
         }
     }
 
@@ -147,11 +146,23 @@ public class Display {
         return field;
     }
 
-    public String getDeadCellBody() {
-        return deadCellBody;
-    }
-
     public String[][] getFutureResult() {
         return futureResult;
+    }
+
+    public String[][] getResultField() {
+        return result;
+    }
+
+    int getYLength() {
+        return yLength;
+    }
+
+    int getXLength() {
+        return xLength;
+    }
+
+    public void setDeadCellBody(String deadCellBody) {
+        Display.deadCellBody = deadCellBody;
     }
 }

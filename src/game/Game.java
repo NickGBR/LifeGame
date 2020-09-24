@@ -22,7 +22,7 @@ public class Game{
         this.barrier = new CyclicBarrier(2);
         this.iteration = iteration;
         this.display = display;
-        this.status = display.getResult();
+        this.status = display.getResultField();
         this.xLength = display.getXLength();
         this.yLength = display.getYLength();
         this.cellCounter = new String[xLength][yLength];
@@ -32,7 +32,7 @@ public class Game{
         this.barrier = new CyclicBarrier(2);
         this.iteration = iteration;
         this.display = display;
-        this.status = display.getResult();
+        this.status = display.getResultField();
         this.xLength = display.getXLength();
         this.yLength = display.getYLength();
         this.cellCounter = new String[xLength][yLength];
@@ -42,7 +42,7 @@ public class Game{
     public void play() throws InterruptedException {
         for(int iteration = 0; iteration<this.iteration; iteration++){
             if(this.isAnimated()) {
-                Thread.sleep(120);
+                Thread.sleep(160);
                 display.show(status);
             }
             for(int x = 0; x<xLength;x++){
@@ -71,7 +71,7 @@ public class Game{
                         case 7:
                         case 8:
                             if(point.equals(cell)){
-                            display.killCell(x, y);}
+                                display.killCell(x, y);}
                             break;
                         case 2: if(point.equals(cell)){
                             display.addCell(x, y);
@@ -88,15 +88,20 @@ public class Game{
         }
     }
 
-    public void playMultithreading(){
+    public void playMultithreading() throws InterruptedException {
         Thread leftSideHandler = new Thread(new LeftSideHandler(this));
         Thread rightSideHandler = new Thread(new RightSideHandler(this));
         rightSideHandler.setName("right");
         leftSideHandler.setName("left");
         rightSideHandler.start();
         leftSideHandler.start();
+        rightSideHandler.join();
+        leftSideHandler.join();
     }
 
+    public void setAnimated(boolean animated) {
+        this.animated = animated;
+    }
 
     public int getRightX(int x) {
         int correctedX = x;
@@ -146,5 +151,9 @@ public class Game{
 
     public CyclicBarrier getBarrier() {
         return barrier;
+    }
+
+    public void setDisplay(Display display) {
+        this.display = display;
     }
 }
