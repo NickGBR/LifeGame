@@ -6,9 +6,8 @@ import game.handler.RightSideHandler;
 import java.util.concurrent.CyclicBarrier;
 
 public class Game{
-    private Display display;
+    private Field field;
     private int cellsCounter;
-    private int iteration;
     private volatile int step=0;
     private int yLength;
     private int xLength;
@@ -18,38 +17,36 @@ public class Game{
     private String cellCounter[][];
     private CyclicBarrier barrier;
 
-    public Game(Display display, int iteration) {
+    public Game(Field field, int iteration) {
         this.barrier = new CyclicBarrier(2);
-        this.iteration = iteration;
-        this.display = display;
-        this.status = display.getResultField();
-        this.xLength = display.getXLength();
-        this.yLength = display.getYLength();
+        this.field = field;
+        this.status = field.getResultField();
+        this.xLength = field.getXLength();
+        this.yLength = field.getYLength();
         this.cellCounter = new String[xLength][yLength];
     }
 
-    public Game(Display display, int iteration, boolean animated) {
+    public Game(Field field, int iteration, boolean animated) {
         this.barrier = new CyclicBarrier(2);
-        this.iteration = iteration;
-        this.display = display;
-        this.status = display.getResultField();
-        this.xLength = display.getXLength();
-        this.yLength = display.getYLength();
+        this.field = field;
+        this.status = field.getResultField();
+        this.xLength = field.getXLength();
+        this.yLength = field.getYLength();
         this.cellCounter = new String[xLength][yLength];
         this.animated = animated;
     }
 
-    public void play() throws InterruptedException {
-        for(int iteration = 0; iteration<this.iteration; iteration++){
+    public Field play(int iteration) throws InterruptedException {
+        for(int i = 0; i<iteration; i++){
             if(this.isAnimated()) {
                 Thread.sleep(160);
-                display.show(status);
+                field.show(status);
             }
             for(int x = 0; x<xLength;x++){
                 for(int y = 0; y<yLength;y++) {
                     cellsCounter = 0;
                     String point = status[x][y];
-                    String cell = display.getCellBody();
+                    String cell = field.getCellBody();
 
                     if (cell.equals(status[x][getRightY(y+1)])) cellsCounter++;
                     if (cell.equals(status[x][getRightY(y-1)])) cellsCounter++;
@@ -71,21 +68,22 @@ public class Game{
                         case 7:
                         case 8:
                             if(point.equals(cell)){
-                                display.killCell(x, y);}
+                                field.killCell(x, y);}
                             break;
                         case 2: if(point.equals(cell)){
-                            display.addCell(x, y);
+                            field.addCell(x, y);
                         }
                             break;
                         case 3:
-                            display.addCell(x, y);
+                            field.addCell(x, y);
                             break;
                     }
                 }
             }
-            display.arrayLoad();
+            field.arrayLoad();
 
         }
+        return field;
     }
 
     public void playMultithreading() throws InterruptedException {
@@ -117,10 +115,6 @@ public class Game{
         return correctedY;
     }
 
-    public int getIteration() {
-        return iteration;
-    }
-
     public String[][] getStatus() {
         return status;
     }
@@ -133,8 +127,8 @@ public class Game{
         return xLength;
     }
 
-    public Display getDisplay() {
-        return display;
+    public Field getField() {
+        return field;
     }
 
     public int getStep() {
@@ -153,7 +147,7 @@ public class Game{
         return barrier;
     }
 
-    public void setDisplay(Display display) {
-        this.display = display;
+    public void setField(Field field) {
+        this.field = field;
     }
 }

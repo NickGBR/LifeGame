@@ -1,6 +1,6 @@
 package game.handler;
 
-import game.Display;
+import game.Field;
 import game.Game;
 
 import java.util.concurrent.BrokenBarrierException;
@@ -8,11 +8,11 @@ import java.util.concurrent.BrokenBarrierException;
 public class RightSideHandler implements Runnable {
 
     private Game game;
-    private String[][] field;
+    private String[][] resultField;
     private int xLength;
     private int yLength;
     private final String[][] cellCounter;
-    private Display display;
+    private Field field;
     private int step;
 
     public RightSideHandler(Game game) {
@@ -20,8 +20,8 @@ public class RightSideHandler implements Runnable {
         xLength = game.getxLength();
         yLength = game.getyLength();
         cellCounter = new String[xLength][yLength];
-        this.display = game.getDisplay();
-        this.field = display.getResultField();
+        this.field = game.getField();
+        this.resultField = field.getResultField();
     }
 
     @Override
@@ -34,17 +34,17 @@ public class RightSideHandler implements Runnable {
                 for(int y = 0; y < yLength; y++) {
 
                     int cellsCounter = 0;
-                    String cell = display.getCellBody();
-                    String point = field[x][y];
+                    String cell = field.getCellBody();
+                    String point = resultField[x][y];
 
-                    if (cell.equals(field[x][game.getRightY(y + 1)])) cellsCounter++;
-                    if (cell.equals(field[x][game.getRightY(y - 1)])) cellsCounter++;
-                    if (cell.equals(field[game.getRightX(x + 1)][y])) cellsCounter++;
-                    if (cell.equals(field[game.getRightX(x - 1)][y])) cellsCounter++;
-                    if (cell.equals(field[game.getRightX(x + 1)][game.getRightY(y - 1)])) cellsCounter++;
-                    if (cell.equals(field[game.getRightX(x + 1)][game.getRightY(y + 1)])) cellsCounter++;
-                    if (cell.equals(field[game.getRightX(x - 1)][game.getRightY(y - 1)])) cellsCounter++;
-                    if (cell.equals(field[game.getRightX(x - 1)][game.getRightY(y + 1)])) cellsCounter++;
+                    if (cell.equals(resultField[x][game.getRightY(y + 1)])) cellsCounter++;
+                    if (cell.equals(resultField[x][game.getRightY(y - 1)])) cellsCounter++;
+                    if (cell.equals(resultField[game.getRightX(x + 1)][y])) cellsCounter++;
+                    if (cell.equals(resultField[game.getRightX(x - 1)][y])) cellsCounter++;
+                    if (cell.equals(resultField[game.getRightX(x + 1)][game.getRightY(y - 1)])) cellsCounter++;
+                    if (cell.equals(resultField[game.getRightX(x + 1)][game.getRightY(y + 1)])) cellsCounter++;
+                    if (cell.equals(resultField[game.getRightX(x - 1)][game.getRightY(y - 1)])) cellsCounter++;
+                    if (cell.equals(resultField[game.getRightX(x - 1)][game.getRightY(y + 1)])) cellsCounter++;
 
                     cellCounter[x][y] = Integer.toString(x);
 
@@ -57,16 +57,16 @@ public class RightSideHandler implements Runnable {
                         case 7:
                         case 8:
                             if(point.equals(cell)) {
-                                display.killCell(x, y);
+                                field.killCell(x, y);
                             }
                             break;
                         case 2: if(point.equals(cell)){
-                            display.addCell(x, y);
+                            field.addCell(x, y);
                             break;
                         }
                             break;
                         case 3:
-                            display.addCell(x, y);
+                            field.addCell(x, y);
                             break;
                     }
                 }

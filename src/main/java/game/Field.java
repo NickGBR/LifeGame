@@ -1,9 +1,8 @@
 package game;
 
-public class Display {
+public class Field {
 
     private String resultField = "";
-    private Field field;
     private volatile String[][] result;
     private volatile String[][] futureResult;
     private int yLength;
@@ -11,10 +10,13 @@ public class Display {
     private static String cellBody = " O ";
     private static String deadCellBody = "   ";
 
-    public Display(Field field){
-        this.field = field;
-        this.yLength = field.getY().length;
-        this.xLength = field.getX().length;
+    public boolean isAlive(int x, int y){
+        return result[x][y].equals(cellBody);
+    }
+
+    public Field(int xLength, int yLength){
+        this.yLength = yLength;
+        this.xLength = xLength;
         this.result = new String[xLength][yLength];
         this.futureResult = new String[xLength][yLength];
         reloadDisplay();
@@ -49,7 +51,6 @@ public class Display {
         }
     }
 
-
     public void killCell(int coordX, int coordY) {
         for (int x = 0; x < xLength; x++) {
 
@@ -61,7 +62,6 @@ public class Display {
             }
         }
     }
-
 
     //Changed
     private void fillDisplay(String[][] fillingArray) {
@@ -99,7 +99,6 @@ public class Display {
         return resultField;
     }
 
-
     public String getResultString(){
         String resultField = "";
         for (int y = 0; y < yLength; y++) {
@@ -111,7 +110,6 @@ public class Display {
         return resultField;
     }
 
-
     public void showCounts(String[][] strings) {
         for (int y = 0; y < this.yLength; y++) {
             System.out.println();
@@ -120,7 +118,6 @@ public class Display {
             }
         }
     }
-
 
     public void arrayLoad() {
         for (int x = 0; x < xLength; x++) {
@@ -142,14 +139,6 @@ public class Display {
         return cellBody;
     }
 
-    public Field getField() {
-        return field;
-    }
-
-    public String[][] getFutureResult() {
-        return futureResult;
-    }
-
     public String[][] getResultField() {
         return result;
     }
@@ -163,6 +152,6 @@ public class Display {
     }
 
     public void setDeadCellBody(String deadCellBody) {
-        Display.deadCellBody = deadCellBody;
+        Field.deadCellBody = deadCellBody;
     }
 }
